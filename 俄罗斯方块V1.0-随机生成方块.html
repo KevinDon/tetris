@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<style type="text/css">
+		table {margin:0; overflow:hidden; border-collapse:collapse; }
+		td {width:20px; height:20px; border:1px solid #eee; background:#f4f4f4}
+		#bigArea{ overflow: hidden; width: 350px; margin: 0 auto; position: relative;}
+		#gameArea{ float: left; }
+		#buttons{ float: left; width: 100px; position: absolute; bottom: 0; right: 0; }
+		.button{ float: left;  margin-right: 5px; margin-bottom: 5px;}
+		.cover{ background: #000; }
+	</style>
+	<script type="text/javascript" src= "jquery-2.1.0.min.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			var width = 10;
+			var height = 20;
+			var gridElemet = mulitArr(height, width);
+			var carrier = mulitArr(height, width);
+			var blockShape = [
+				[
+					[1,0,0,0],
+					[1,0,0,0],
+					[1,0,0,0],
+					[1,0,0,0],
+				],//丨
+				[
+					[1,0,0,0],
+					[1,1,1,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//L翻转
+				[
+					[0,0,1,0],
+					[1,1,1,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//L
+				[
+					[1,1,0,0],
+					[0,1,1,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//Z
+				[
+					[0,1,1,0],
+					[1,1,0,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//S
+				[
+					[1,1,0,0],
+					[1,1,0,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//田
+				[
+					[0,1,0,0],
+					[1,1,1,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//凸
+			]
+
+			init();
+			function init(){
+				var area = new Area;
+				area.createTable();
+				
+				var tetris = new Tetris(4, 0, blockShape[Math.floor(Math.random() * 7)]);
+				tetris.putNewTetris();
+				drawGrid();
+				console.log(gridElemet);
+			}
+
+			function Tetris(x, y, arr){
+				this.x = x;//出现的X坐标
+				this.y = y; //出现的Y坐标
+				this.arr = arr;//随机生成的方块的类型
+				this.w = 4;
+				this.h = 4;
+
+				this.putNewTetris = function(){
+					for (var j = 0; j < 4; j++) {
+						for (var i = 0; i < 4; i++) {
+							if (this.arr[j][i] == 1) {
+								carrier[this.y + j][this.x + i] = "cover";
+							};
+						};
+					};
+				}
+			}
+
+
+			//将虚拟数组中的数据展示到显示数组中
+			function drawGrid(){
+				for (var j = 0; j < height; j++) {
+					for (var i = 0; i < width; i++) {
+						if(carrier[j][i] == "cover"){
+							gridElemet[j][i].className = "cover";
+						}
+					};
+				};
+			}
+
+			//区域对象
+			function Area(){
+				this.createTable = function(){
+					var table = document.createElement("table");
+					for (var j = 0; j < height; j++) {
+						var tr = document.createElement("tr");
+						for (var i = 0; i < width; i++) {
+							var td = document.createElement("td");
+							gridElemet[j][i] = tr.appendChild(td);
+						};
+						table.appendChild(tr);
+					};
+					document.getElementById("gameArea").appendChild(table);
+				}
+			}
+
+			function mulitArr(h, w){
+				var arr = new Array(h);
+				for (var i = 0; i < h; i++) {
+					arr[i] = new Array(w);
+				};
+				return arr;
+			}
+		})
+	</script>
+</head>
+<body>
+	<div id="bigArea">
+		<div id="gameArea"></div>
+		<div id="buttons">
+			<input id ="start" type="button" value="开始" class="button">
+			<input id="pause" type="button" value="暂停" class="button">
+			<input id="restart" type="button" value="重来" class="button">
+		</div>
+	</div>
+</body>
+</html>
