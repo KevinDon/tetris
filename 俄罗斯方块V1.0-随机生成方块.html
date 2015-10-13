@@ -73,8 +73,8 @@
 				area.createTable();
 				TetrisTimer = setTimeout(function(){ moveDownBox(); }, 100);
 				tetris = new Tetris(4, 0, blockShape[Math.floor(Math.random() * 7)]);
-				//tetris.putNewTetris();
-				//drawGrid();
+				tetris.putNewTetris();
+				drawGrid();
 				console.log(gridElemet);
 				console.log(carrier);
 			}
@@ -102,7 +102,7 @@
 				this.putNewTetris = function(){
 					for (var j = 0; j < this.h; j++) {
 						for (var i = 0; i < this.w; i++) {
-							if(this.y >=19){
+							if(this.y >= 19){
 								console.log(j, i);
 								console.log(this.y,  this.x, carrier[this.y + j][this.x + i]);
 							}
@@ -122,7 +122,10 @@
 						this.putNewTetris();
 						drawGrid();						
 					}else{
+						this.x = 4;
+						this.y = 0;
 						console.log("fasle");
+						//fillToCarrierBlock();
 						this.putNewTetris();
 						drawGrid();
 						return;
@@ -133,7 +136,7 @@
 					console.log(y,x,carrier[y][x]);
 					for (var j = 0; j < this.h; j++) {
 						for (var i = 0; i < this.w; i++) {
-							if ((carrier[y + j][x + i] == "cover" && this.arr[j][i] == 1)  || y > height || x < 0 || x >= width ){
+							if ((carrier[y + j][x + i] == "cover" && this.arr[j][i] == 1 && carrierBlcokr[y + j][x + i] == "block")  || y >= 19 || x < 0 || x >= width ){
 								return false;
 							}
 						};
@@ -148,11 +151,23 @@
 					for (var i = 0; i < width; i++) {
 						if(carrier[j][i] == "cover"){
 							$(gridElemet[j][i]).addClass('cover');
-							carrierBlcok[j][i] = carrier[j][i];
+							carrierBlcok[j][i] = "block";
 						}
 					};
 				};
 			}
+
+			//将虚拟数组缓存carrierBlock
+			function fillToCarrierBlock(){
+				for (var j = 0; j < height; j++) {
+					for (var i = 0; i < width; i++) {
+						if(carrierBlcok[j][i] == "block"){
+							$(gridElemet[j][i]).addClass("block");
+						}
+					};
+				};
+			}
+
 
 			//区域对象
 			function Area(){
