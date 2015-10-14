@@ -68,12 +68,15 @@
 				],//凸
 			]
 
+			$(document).keydown(function(event) {
+				listenEvent(event);
+			});
 			init();
 			function init(){
 				var area = new Area;
 				area.createTable();
 				TetrisTimer = setTimeout(function(){ moveDownBox(); }, 100);
-				tetris = new Tetris(4, 0, blockShape[Math.floor(Math.random() * 7)]);
+				tetris = new Tetris(4, 0, blockShape[Math.floor(Math.random() * 6)]);
 				tetris.putNewTetris();
 				drawGrid();
 				console.log(gridElemet);
@@ -89,8 +92,8 @@
 
 				//清除旧的方块
 				this.clearOldTetris = function(){
-					for (var j = 0; j < this.h; j++) {
-						for (var i = 0; i < this.w; i++) {
+					for (var j = 0; j <= this.h; j++) {
+						for (var i = 0; i <= this.w; i++) {
 							if (this.arr[j][i] > 0) {
 								carrier[this.y + j][this.x + i] = "";
 								carrierBlcok[this.y + j][this.x + i] = "";
@@ -102,8 +105,8 @@
 
 				//创建新的方块
 				this.putNewTetris = function(){
-					for (var j = 0; j < this.h; j++) {
-						for (var i = 0; i < this.w; i++) {
+					for (var j = 0; j <= this.h; j++) {
+						for (var i = 0; i <= this.w; i++) {
 							if (this.arr[j][i] > 0) {
 								carrier[this.y + j][this.x + i] = "cover";
 							};
@@ -151,10 +154,13 @@
 				}
 
 				this.canMover = function(x, y){
-					for (var j = 0; j < this.h; j++) {
-						for (var i = 0; i < this.w; i++) {
-							console.log(x,y,i,j);
-							if ((carrier[y + j][x + i] != "" && this.arr[j][i] == 1 && carrierBlcok[y + j][x + i] == "block")  || y >= 19 || x < 0 || x >= width){
+					for (var j = 0; j <= this.h; j++) {
+						for (var i = 0; i <= this.w; i++) {
+							console.log(x, y, i, j);
+							if((y + j) >= height || (x + i) >= width){
+								return false;
+							}
+							if (y > 19 || x < 0 || x >= width || (carrier[y + j][x + i] != "" && this.arr[j][i] == 1 && carrierBlcok[y + j][x + i] == "block")){
 								return false;
 							}
 						};
@@ -173,7 +179,7 @@
 						}
 					};
 				};
-			}
+			} 
 
 			//检测方块是否到达顶部
 			function checkGameOver(){
@@ -185,11 +191,11 @@
 					};
 				};
 				if(!bOver){
-					tetris = new Tetris(4, 0, blockShape[Math.floor(Math.random() * 7)]);
+					tetris = new Tetris(4, 0, blockShape[Math.floor(Math.random() * 6)]);
 					tetris.putNewTetris();					
 				}else{
 					window.clearInterval();  
-					alert("Game Over");
+					consloe.log("Game Over");
 				}
 			}
 
@@ -202,7 +208,7 @@
 						}
 					};
 				};
-				//fillGridElemetsWithCarrierBlock();
+				fillGridElemetsWithCarrierBlock();
 			}
 
 			//根据CarrierBlock在去填充gridElemts的内容
@@ -215,6 +221,7 @@
 					};
 				};
 			}
+
 			//区域对象
 			function Area(){
 				this.createTable = function(){
@@ -271,7 +278,7 @@
 						}
 					};
 				};
-				return temp[temp.length - 1] + 1;
+				return temp[temp.length - 1];
 			}
 			/**
 			 * [getWidth description]
@@ -284,16 +291,12 @@
 					for (var i = 0; i < arr[j].length; i++) {
 						if(arr[j][i] == 1){
 							temp[j] = j;
-							console.log(temp);
 						}
 					};
 				};
-				return temp[temp.length - 1] + 1;
+				return temp[temp.length - 1];
 			}
 
-			$(document).keydown(function(event) {
-				listenEvent(event);
-			});
 
 			function listenEvent(e){
 				var e = e || event;
