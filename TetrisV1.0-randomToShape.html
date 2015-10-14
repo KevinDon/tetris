@@ -22,6 +22,7 @@
 			var carrierBlcok = mulitArr(height, width);//堆积在底部的虚拟数组
 			var TetrisTimer;
 			var tetris;
+			var isGameOver = false;
 			var blockShape = [
 				[
 					[1,1,1,1],
@@ -109,6 +110,25 @@
 						};
 					};
 				}
+				this.moveRight = function(){
+					this.clearOldTetris();
+					var _x = this.x + 1;
+					if(this.canMover(_x, this.y)){
+						this.x = _x;
+					}
+					this.putNewTetris();
+					drawGrid();
+				}
+
+				this.moveLeft = function(){
+					this.clearOldTetris();
+					var _x = this.x - 1;
+					if(this.canMover(_x, this.y)){
+						this.x = _x;
+					}
+					this.putNewTetris();
+					drawGrid();
+				}
 
 				this.moveDown = function(){
 					this.clearOldTetris();//清除旧的方块
@@ -116,7 +136,6 @@
 					if(this.canMover(this.x, _y)){
 						//console.log(_y);
 						this.y = _y
-						drawGrid();
 						this.putNewTetris();
 						drawGrid();
 						console.log("true");
@@ -169,7 +188,7 @@
 					tetris = new Tetris(4, 0, blockShape[Math.floor(Math.random() * 7)]);
 					tetris.putNewTetris();					
 				}else{
-					window.clearInterval(TetrisTimer);  
+					window.clearInterval();  
 					alert("Game Over");
 				}
 			}
@@ -214,7 +233,10 @@
 
 
 			function moveDownBox(){  
-				 tetris.moveDown();  
+				 if(isGameOver){
+				 	return;
+				 }
+				 tetris.moveDown(); 
 				  setTimeout(function(){ moveDownBox(); }, 100);  
 			}
 
@@ -267,6 +289,20 @@
 					};
 				};
 				return temp[temp.length - 1] + 1;
+			}
+
+			$(document).keydown(function(event) {
+				listenEvent(event);
+			});
+
+			function listenEvent(e){
+				var e = e || event;
+				switch(e.keyCode){
+					case 37 : tetris.moveLeft(); break;
+					case 38 : tetris.rotate(); break;
+					case 39 : tetris.moveRight(); break;
+					case 40 : tetris.moveDownSpeedup(); break;
+				}
 			}
 		})
 	</script>
