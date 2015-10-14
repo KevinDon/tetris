@@ -75,8 +75,8 @@
 			function init(){
 				var area = new Area;
 				area.createTable();
-				TetrisTimer = setTimeout(function(){ moveDownBox(); }, 100);
-				tetris = new Tetris(4, 0, blockShape[Math.floor(Math.random() * 6)]);
+				TetrisTimer = setTimeout(function(){ moveDownBox(); }, 1000);
+				tetris = new Tetris(4, 0, blockShape[6]);
 				tetris.putNewTetris();
 				drawGrid();
 				console.log(gridElemet);
@@ -160,12 +160,31 @@
 							if((y + j) >= height || (x + i) >= width){
 								return false;
 							}
-							if (y > 19 || x < 0 || x >= width || (carrier[y + j][x + i] != "" && this.arr[j][i] == 1 && carrierBlcok[y + j][x + i] == "block")){
+							if (y >= height || x < 0 || x >= width || (carrier[y + j][x + i] != "" && this.arr[j][i] == 1 && carrierBlcok[y + j][x + i] == "block")){
 								return false;
 							}
 						};
 					};
 					return true;
+				}
+
+				this.rotate = function(){
+					var temp = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+					for (var j = 0; j <= this.h; j ++) {
+						for (var i = 0; i <= this.w; i++) {
+							temp[i][this.h - j] = this.arr[j][i];
+						};
+					};
+					console.log(temp);
+					var newTetris = new Tetris(this.x, this.y, temp);
+					this.clearOldTetris();
+					if(!newTetris.canMover(this.x, this.y)){
+						this.putNewTetris;
+					}else{
+						tetris = newTetris;
+						tetris.putNewTetris();
+						drawGrid();
+					}
 				}
 			}
 			
@@ -191,11 +210,11 @@
 					};
 				};
 				if(!bOver){
-					tetris = new Tetris(4, 0, blockShape[Math.floor(Math.random() * 6)]);
+					tetris = new Tetris(4, 0, blockShape[6]);
 					tetris.putNewTetris();					
 				}else{
 					window.clearInterval();  
-					consloe.log("Game Over");
+					console.log("Game Over");
 				}
 			}
 
@@ -244,7 +263,7 @@
 				 	return;
 				 }
 				 tetris.moveDown(); 
-				  setTimeout(function(){ moveDownBox(); }, 100);  
+				  setTimeout(function(){ moveDownBox(); }, 1000);  
 			}
 
 			function mulitArr(h, w){
