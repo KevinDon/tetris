@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<style type="text/css">
+		table {margin:0; overflow:hidden; border-collapse:collapse; }
+		td {width:20px; height:20px; border:1px solid #eee; background:#f4f4f4}
+		#bigArea{ overflow: hidden; width: 350px; margin: 0 auto; position: relative;}
+		#gameArea{ float: left; }
+		#buttons{ float: left; width: 100px; position: absolute; bottom: 0; right: 0; }
+		.button{ float: left;  margin-right: 5px; margin-bottom: 5px;}
+		.cover{ background: #000; }
+		.block{ background: #000;  }
+	</style>
+	<script type="text/javascript" src= "jquery-2.1.0.min.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			var width = 10;
+			var height = 20;
+			var gridElemet = mulitArr(height, width);//现实的网格数组
+			var carrier = mulitArr(height, width);//移动时的虚拟数组
+			var carrierBlcok = mulitArr(height, width);//堆积在底部的虚拟数组
+			var TetrisTimer;
+			var tetris;
+			var blockShape = [
+				[
+					[1,1,1,1],
+					[0,0,0,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//丨
+				[
+					[1,0,0,0],
+					[1,1,1,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//L翻转
+				[
+					[0,0,1,0],
+					[1,1,1,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//L
+				[
+					[1,1,0,0],
+					[0,1,1,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//Z
+				[
+					[0,1,1,0],
+					[1,1,0,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//S
+				[
+					[1,1,0,0],
+					[1,1,0,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//田
+				[
+					[0,1,0,0],
+					[1,1,1,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//凸
+			]
+
+			init();
+			function init(){
+				var area = new Area;
+				area.createTable();
+				TetrisTimer = setTimeout(function(){ moveDownBox(); }, 100);
+				tetris = new Tetris(4, 0, blockShape[Math.floor(Math.random() * 7)]);
+				tetris.putNewTetris();
+				drawGrid();
+				console.log(gridElemet);
+				console.log(carrier);
+			}
+
+			function Tetris(x, y, arr){
+				this.x = x;//出现的X坐标
+				this.y = y; //出现的Y坐标
+				this.arr = arr;//随机生成的方块的类型 
+				this.w = 4;
+				this.h = 4;
+
+				//清除旧的方块
+				this.clearOldTetris = function(){
+					for (var j = 0; j < this.h; j++) {
+						for (var i = 0; i < this.w; i++) {
+							if (this.arr[j][i] > 0) {
+								carrier[this.y + j][this.x + i] = ""
+								$(gridElemet[this.y + j][this.x + i]).removeClass("cover");
+							};
+						};
+					};
+				}
+
+				//创建新的方块
+				this.putNewTetris = function(){
+					for (var j = 0; j < this.h; j++) {
+						for (var i = 0; i < this.w; i++) {
+							if (this.arr[j][i] > 0) {
+								carrier[this.y + j][this.x + i] = "cover";
+							};
+						};
+					};
+				}
+
+				this.moveDown = function(){
+					this.clearOldTetris();//清除旧的方块
+					var _y = this.y + 1;//计算下次的Y坐标
+					if(this.canMover(this.x, _y)){
+						//console.log(_y);
+						this.y = _y
+						this.putNewTetris();
+						drawGrid();
+					}else{
+						console.log("fasle");
+						this.putNewTetris();
+						drawGrid();
+						fillToCarrierBlock();
+						console.log(carrierBlcok);
+						checkGameOver()
+						return;
+					}
+				}
+
+				this.canMover = function(x, y){
+					console.log(y,x,carrier[y][x]);
+					for (var j = 0; j < this.h; j++) {
+						for (var i = 0; i < this.w; i++) {
+							if ((carrier[y + j][x + i] == "cover" && this.arr[j][i] == 1)  || y >= 19 || x < 0 || x >= width || carrierBlcok[y + j][x + i] == "block"){
+								return false;
+							}
+						};
+						return true;
+					};
+				}
+			}
+			
+			//将虚拟数组中的数据展示到显示数组中
+			function drawGrid(){
+				for (var j = 0; j < height; j++) {
+					for (var i = 0; i < width; i++) {
+						if(carrier[j][i] == "cover"){
+							$(gridElemet[j][i]).addClass('cover');
+							//carrierBlcok[j][i] = "block";
+						}
+					};
+				};
+			}
+
+			//检测方块是否到达顶部
+			function checkGameOver(){
+				var bOver = false;
+				for (var i = 0; i < height; i++) {
+					if(carrier[0][i] == "cover" && carrierBlcok == "block"){
+						bOver = true;
+						break;
+					};
+				};
+				if(!bOver){
+					tetris = new Tetris(4, 0, blockShape[Math.floor(Math.random() * 7)]);
+					tetris.putNewTetris();					
+				}else{
+					window.clearInterval();  
+					alert("Game Over");
+				}
+			}
+
+			//将虚拟数组缓存carrierBlock
+			function fillToCarrierBlock(){
+				for (var j = 0; j < height; j++) {
+					for (var i = 0; i < width; i++) {
+						if(carrier[j][i] == "cover"){
+							carrierBlcok[j][i] = "block";
+						}
+					};
+				};
+				fillGridElemetsWithCarrierBlock();
+			}
+
+			//根据CarrierBlock在去填充gridElemts的内容
+			function fillGridElemetsWithCarrierBlock(){
+				for (var j = 0; j < height; j++) {
+					for (var i = 0; i < width; i++) {
+						if(carrierBlcok[j][i] == "block"){
+							$(gridElemet[j][i]).addClass("block");
+						}
+					};
+				};
+			}
+			//区域对象
+			function Area(){
+				this.createTable = function(){
+					var table = document.createElement("table");
+					for (var j = 0; j < height; j++) {
+						var tr = document.createElement("tr");
+						for (var i = 0; i < width; i++) {
+							var td = document.createElement("td");
+							gridElemet[j][i] = tr.appendChild(td);
+						};
+						table.appendChild(tr);
+					};
+					document.getElementById("gameArea").appendChild(table);
+				}
+			}
+
+
+			function moveDownBox(){  
+				 tetris.moveDown();  
+				  setTimeout(function(){ moveDownBox(); }, 100);  
+			}
+
+			function mulitArr(h, w){
+				var arr = new Array(h);
+				for (var j = 0; j < h; j++) {
+					arr[j] = new Array(w);
+					for (var i = 0; i < width; i++) {
+						arr[j][i] = "";
+					};
+				};
+				return arr;
+			}
+		})
+	</script>
+</head>
+<body>
+	<div id="bigArea">
+		<div id="gameArea"></div>
+		<div id="buttons">
+			<input id ="start" type="button" value="开始" class="button">
+			<input id="pause" type="button" value="暂停" class="button">
+			<input id="restart" type="button" value="重来" class="button">
+		</div>
+	</div>
+</body>
+</html>
