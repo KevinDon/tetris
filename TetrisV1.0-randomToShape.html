@@ -83,15 +83,16 @@
 				this.x = x;//出现的X坐标
 				this.y = y; //出现的Y坐标
 				this.arr = arr;//随机生成的方块的类型 
-				this.w = 4;
-				this.h = 4;
+				this.w = getWidth(arr);
+				this.h = getHeight(arr);
 
 				//清除旧的方块
 				this.clearOldTetris = function(){
 					for (var j = 0; j < this.h; j++) {
 						for (var i = 0; i < this.w; i++) {
 							if (this.arr[j][i] > 0) {
-								carrier[this.y + j][this.x + i] = ""
+								carrier[this.y + j][this.x + i] = "";
+								carrierBlcok[this.y + j][this.x + i] = "";
 								$(gridElemet[this.y + j][this.x + i]).removeClass("cover");
 							};
 						};
@@ -115,8 +116,10 @@
 					if(this.canMover(this.x, _y)){
 						//console.log(_y);
 						this.y = _y
+						drawGrid();
 						this.putNewTetris();
 						drawGrid();
+						console.log("true");
 					}else{
 						console.log("fasle");
 						this.putNewTetris();
@@ -129,15 +132,15 @@
 				}
 
 				this.canMover = function(x, y){
-					console.log(y,x,carrier[y][x]);
 					for (var j = 0; j < this.h; j++) {
 						for (var i = 0; i < this.w; i++) {
-							if ((carrier[y + j][x + i] == "cover" && this.arr[j][i] == 1)  || y >= 19 || x < 0 || x >= width || carrierBlcok[y + j][x + i] == "block"){
+							console.log(x,y,i,j);
+							if ((carrier[y + j][x + i] != "" && this.arr[j][i] == 1 && carrierBlcok[y + j][x + i] == "block")  || y >= 19 || x < 0 || x >= width){
 								return false;
 							}
 						};
-						return true;
 					};
+					return true;
 				}
 			}
 			
@@ -157,7 +160,7 @@
 			function checkGameOver(){
 				var bOver = false;
 				for (var i = 0; i < height; i++) {
-					if(carrier[0][i] == "cover" && carrierBlcok == "block"){
+					if(carrier[0][i] == "cover" && carrierBlcok[0][i] == "block"){
 						bOver = true;
 						break;
 					};
@@ -166,7 +169,7 @@
 					tetris = new Tetris(4, 0, blockShape[Math.floor(Math.random() * 7)]);
 					tetris.putNewTetris();					
 				}else{
-					window.clearInterval();  
+					window.clearInterval(TetrisTimer);  
 					alert("Game Over");
 				}
 			}
@@ -180,7 +183,7 @@
 						}
 					};
 				};
-				fillGridElemetsWithCarrierBlock();
+				//fillGridElemetsWithCarrierBlock();
 			}
 
 			//根据CarrierBlock在去填充gridElemts的内容
@@ -224,6 +227,46 @@
 					};
 				};
 				return arr;
+			}
+
+			/**
+			 *[
+			 *	[0,1,0,0],
+			 *	[1,1,1,0],
+		 	 *	[0,0,0,0],
+			 *	[0,0,0,0],
+			 *],//凸
+			 *
+			 * 获取方块的长度
+			 */
+			function getWidth(arr){
+				var temp = new Array;
+				for (var j = 0; j < arr.length; j++) {
+					for (var i = 0; i < arr[j].length; i++) {
+						if(arr[j][i] == 1){
+							temp[i] = i;
+							console.log(temp);
+						}
+					};
+				};
+				return temp[temp.length - 1] + 1;
+			}
+			/**
+			 * [getWidth description]
+			 * @param  {[type]} arr [方块数组]
+			 * @return {[type]}     [int]
+			 */
+			function getHeight(arr){
+				var temp = new Array;
+				for (var j = 0; j < arr.length; j++) {
+					for (var i = 0; i < arr[j].length; i++) {
+						if(arr[j][i] == 1){
+							temp[j] = j;
+							console.log(temp);
+						}
+					};
+				};
+				return temp[temp.length - 1] + 1;
 			}
 		})
 	</script>
