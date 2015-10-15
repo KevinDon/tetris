@@ -25,10 +25,10 @@
 			var isGameOver = false;
 			var blockShape = [
 				[
-					[1,1,1,1],
-					[0,0,0,0],
-					[0,0,0,0],
-					[0,0,0,0],
+					[1,0,0,0],
+					[1,0,0,0],
+					[1,0,0,0],
+					[1,0,0,0],
 				],//丨
 				[
 					[1,0,0,0],
@@ -75,8 +75,8 @@
 			function init(){
 				var area = new Area;
 				area.createTable();
-				TetrisTimer = setTimeout(function(){ moveDownBox(); }, 1000);
-				tetris = new Tetris(4, 0, blockShape[6]);
+				TetrisTimer = setTimeout(function(){ moveDownBox(); }, 100);
+				tetris = new Tetris(4, 0, blockShape[0]);
 				tetris.putNewTetris();
 				drawGrid();
 				console.log(gridElemet);
@@ -148,6 +148,7 @@
 						drawGrid();
 						fillToCarrierBlock();
 						console.log(carrierBlcok);
+						checkLineFull();
 						checkGameOver()
 						return;
 					}
@@ -202,15 +203,32 @@
 			
 			//检测方块是否满了一行
 			function checkLineFull(){
-				var full;
+				var full = 0;
+				var i2,i,j;
 				var finalAboveY = tetris.y; //方块落下后最终的顶点方块的Y坐标
 				var finalBelowY = tetris.y + tetris.h; //方块落下后最下的方块的Y坐标
-				for (var j= finalBelowY; j >= finalAboveY; i--) {
-					for (var i = 0; i < width; i++) {
-						if(carrier[j][i] == "cover" && carrierBlcok[j][i] == "block"){
-							
+				console.log(tetris.y, finalAboveY,finalBelowY);
+				for (i = finalBelowY; i >= finalAboveY;) {
+					full = 1；
+					//检测一行中每一个的CarrierBlock是否为Block
+					for (j = 0; j < 10; j++) {
+						if(carrierBlock[i][j] == ""){
+							full = 0;//只要其中一个为空就讲full设置为0
+							break;
 						}
 					};
+					if(full == 0){
+						i--;
+						continue;//如果full为0，那么就进行下次循环
+					}
+					for (i2 = i; i2  > 0; i2--) {
+						for (j = 1; j< 10; j++) {
+							carrier[i2][j] = carrier[i2-1][j];
+							drawGrid();
+							finalAboveY++;
+						};
+					};
+					
 				};
 			}
 			//检测方块是否到达顶部
@@ -223,7 +241,7 @@
 					};
 				};
 				if(!bOver){
-					tetris = new Tetris(4, 0, blockShape[6]);
+					tetris = new Tetris(4, 0, blockShape[0]);
 					tetris.putNewTetris();					
 				}else{
 					window.clearInterval();  
@@ -276,7 +294,7 @@
 				 	return;
 				 }
 				 tetris.moveDown(); 
-				  setTimeout(function(){ moveDownBox(); }, 1000);  
+				  setTimeout(function(){ moveDownBox(); }, 100);  
 			}
 
 			function mulitArr(h, w){
