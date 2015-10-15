@@ -199,7 +199,20 @@
 					};
 				};
 			} 
-
+			
+			//检测方块是否满了一行
+			function checkLineFull(){
+				var full;
+				var finalAboveY = tetris.y; //方块落下后最终的顶点方块的Y坐标
+				var finalBelowY = tetris.y + tetris.h; //方块落下后最下的方块的Y坐标
+				for (var j= finalBelowY; j >= finalAboveY; i--) {
+					for (var i = 0; i < width; i++) {
+						if(carrier[j][i] == "cover" && carrierBlcok[j][i] == "block"){
+							
+						}
+					};
+				};
+			}
 			//检测方块是否到达顶部
 			function checkGameOver(){
 				var bOver = false;
