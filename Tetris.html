@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>Tetris</title>
+	<style type="text/css">
+		table {margin:0; overflow:hidden; border-collapse:collapse; }
+		td {width:20px; height:20px; border:1px solid #eee; background:#f4f4f4}
+		#bigArea{ overflow: hidden; width: 350px; margin: 0 auto; position: relative;}
+		#gameArea{ float: left; }
+		#buttons{ float: left; width: 100px; position: absolute; bottom: 0; right: 0; }
+		.button{ float: left;  margin-right: 5px; margin-bottom: 5px;}
+		.cover{ background: #000; }
+		.block{ background: #000;  }
+	</style>
+	<script type="text/javascript" src= "jquery-2.1.0.min.js"></script>
+	<script type="text/javascript">
+		/*
+		[0,0,0,0,0,0,0,0,0,0]
+		[0,0,0,0,0,0,0,0,0,0]
+		[0,0,0,0,0,0,0,0,0,0]
+		[0,0,0,0,0,0,0,0,0,0]
+		[0,0,0,0,0,0,0,0,0,0]
+		[0,0,0,0,0,0,0,0,0,0]
+		[0,0,0,0,0,0,0,0,0,0]
+		[0,0,0,0,0,0,0,0,0,0]
+		[0,0,0,0,0,0,0,0,0,0]
+		[0,0,0,0,0,0,0,0,0,0]
+		
+		将界面显示模拟成二位数组，如上图
+		*/
+		var width = 10;//游戏区域宽度
+		var height = 20;//游戏区域高度
+		var gridElem = multArray(width, height);//显示在界面的数组
+		var carrier = multArray(width, height);//移动时的虚拟数组
+
+		init();
+		
+		function init(){
+			
+		}
+
+		function Area(){
+			
+		}
+
+		function multArray(w, h){
+			var arr = new Array(h);
+			for (var i = 0; i < h; i++) {
+				arr[i] = new Array(w);
+			};
+			return arr;
+		}
+	</script>
+</head>
+<body>
+	<div id="bigArea">
+		<div id="gameArea"></div>
+		<div id="buttons">
+			<input id ="start" type="button" value="开始" class="button">
+			<input id="pause" type="button" value="暂停" class="button">
+			<input id="restart" type="button" value="重来" class="button">
+		</div>
+	</div>
+</body>
+</html>
