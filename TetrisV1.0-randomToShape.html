@@ -79,8 +79,8 @@
 				tetris = new Tetris(4, 0, blockShape[0]);
 				tetris.putNewTetris();
 				drawGrid();
-				console.log(gridElemet);
-				console.log(carrier);
+				//console.log(gridElemet);
+				//console.log(carrier);
 			}
 
 			function Tetris(x, y, arr){
@@ -96,7 +96,7 @@
 						for (var i = 0; i <= this.w; i++) {
 							if (this.arr[j][i] > 0) {
 								carrier[this.y + j][this.x + i] = "";
-								carrierBlcok[this.y + j][this.x + i] = "";
+								//carrierBlcok[this.y + j][this.x + i] = "";
 								$(gridElemet[this.y + j][this.x + i]).removeClass("cover");
 							};
 						};
@@ -146,8 +146,8 @@
 						console.log("fasle");
 						this.putNewTetris();
 						drawGrid();
-						fillToCarrierBlock();
-						console.log(carrierBlcok);
+						//fillToCarrierBlock();
+						//console.log(carrierBlcok);
 						checkLineFull();
 						checkGameOver()
 						return;
@@ -157,11 +157,11 @@
 				this.canMover = function(x, y){
 					for (var j = 0; j <= this.h; j++) {
 						for (var i = 0; i <= this.w; i++) {
-							console.log(x, y, i, j);
+							//console.log(x, y, i, j);
 							if((y + j) >= height || (x + i) >= width){
 								return false;
 							}
-							if (y >= height || x < 0 || x >= width || (carrier[y + j][x + i] != "" && this.arr[j][i] == 1 && carrierBlcok[y + j][x + i] == "block")){
+							if (y >= height || x < 0 || x >= width || (carrier[y + j][x + i] != "" && this.arr[j][i] == 1)){
 								return false;
 							}
 						};
@@ -176,7 +176,7 @@
 							temp[i][this.h - j] = this.arr[j][i];
 						};
 					};
-					console.log(temp);
+					//console.log(temp);
 					var newTetris = new Tetris(this.x, this.y, temp);
 					this.clearOldTetris();
 					if(!newTetris.canMover(this.x, this.y)){
@@ -191,6 +191,7 @@
 			
 			//将虚拟数组中的数据展示到显示数组中
 			function drawGrid(){
+				//console.log(carrier);
 				for (var j = 0; j < height; j++) {
 					for (var i = 0; i < width; i++) {
 						if(carrier[j][i] == "cover"){
@@ -200,35 +201,52 @@
 					};
 				};
 			} 
-			
+			function drawGridWithCarrierBlock(){
+				for (var j = 0; j < height; j++) {
+					for (var i = 0; i < width; i++) {
+						if(carrierBlcok[j][i] == "block"){
+							$(gridElemet[j][i]).addClass('block');
+							//carrierBlcok[j][i] = "block";
+						}
+					};
+				};
+
+			}
 			//检测方块是否满了一行
 			function checkLineFull(){
 				var full = 0;
-				var i2,i,j;
-				var finalAboveY = tetris.y; //方块落下后最终的顶点方块的Y坐标
-				var finalBelowY = tetris.y + tetris.h; //方块落下后最下的方块的Y坐标
-				console.log(tetris.y, finalAboveY,finalBelowY);
-				for (i = finalBelowY; i >= finalAboveY;) {
-					full = 1；
+				var curr_row;//当前满格的行
+				var cells;//每一行里的每一格
+				var rows;//第几行
+				var finalAboveY = tetris.y; //方块落下后最终的方块的顶点Y坐标 代表着方块的顶点在第几行
+				var finalBelowY = tetris.y + tetris.h; //方块落下后最终的方块的低点Y坐标 代表着方块的长度在第几行
+				//console.log(tetris.y, finalAboveY,finalBelowY);
+				console.log(finalAboveY,finalBelowY);
+				for (rows = finalBelowY; rows >= finalAboveY;) {
+					//默认这行是满格的
+					full = 1;
 					//检测一行中每一个的CarrierBlock是否为Block
-					for (j = 0; j < 10; j++) {
-						if(carrierBlock[i][j] == ""){
+					for (cells = 0; cells < 10; cells++) {
+						if(carrier[rows][cells] != "cover"){
 							full = 0;//只要其中一个为空就讲full设置为0
 							break;
 						}
 					};
 					if(full == 0){
-						i--;
+						rows--;
 						continue;//如果full为0，那么就进行下次循环
 					}
-					for (i2 = i; i2  > 0; i2--) {
-						for (j = 1; j< 10; j++) {
-							carrier[i2][j] = carrier[i2-1][j];
-							drawGrid();
-							finalAboveY++;
+					//这里的i指的是行数，将当前的满格的行进行消除
+					//要从第i行开始遍历整个网格，将上一行的值给赋值到下一行，然后在执行drawGrid ,逐行销毁
+					for (curr_row = rows; curr_row > 0; curr_row--) {
+						for (cells = 0; cells < 10; cells++) {
+							$(gridElemet[curr_row][cells]).removeClass("cover");
+							carrier[curr_row][cells] = carrier[curr_row - 1][cells];
 						};
 					};
-					
+					drawGrid();
+					finalAboveY++;//顶点坐标往上加1
+					console.log(finalAboveY);
 				};
 			}
 			//检测方块是否到达顶部
@@ -324,7 +342,7 @@
 					for (var i = 0; i < arr[j].length; i++) {
 						if(arr[j][i] == 1){
 							temp[i] = i;
-							console.log(temp);
+							//console.log(temp);
 						}
 					};
 				};
