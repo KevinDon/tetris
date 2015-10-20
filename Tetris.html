@@ -342,7 +342,7 @@
 					return;
 				}
 				tetris.moveDwon()
-				timerOut = setTimeout(function (){_moveDown(); }, 1000);
+				timerOut = setTimeout(function (){_moveDown(); }, 500);
 				
 			}
 
@@ -400,7 +400,7 @@
 				//console.log(tetris.w);
 				tetris.putNewTetris();
 				_drawGrids();
-				timerID = setTimeout(function (){ _moveDown() }, 1000);
+				timerID = setTimeout(function (){ _moveDown() }, 500);
 			 }
 
 			init();
