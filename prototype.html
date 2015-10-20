@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>Prototype</title>
+	<script type="text/javascript">
+	window.onload = function(){
+
+			function f1(){
+				this.arr =[
+						[1,1,0,0],
+						[1,1,0,0],
+						[0,0,0,0],
+						[0,0,0,0],
+					],//田
+				this.name3 = this._getWidth(this.arr);
+			}
+
+			f1.prototype = {
+				_getWidth : function(arr){
+					var tempArr = new Array;
+					for (var j = 0; j < arr.length; j++) {
+						for (var i = 0; i < arr[j].length; i++) {
+							if(arr[j][i] == 1){
+								tempArr[i] = i;
+							}
+						};
+					};
+					return tempArr.length;
+				},
+			};
+
+			var temp = new f1;
+			console.log(temp);
+			
+			function Tetris (x, y, shape){
+				//console.log(shape);
+				this.x = x;
+				this.y = y;
+				//this.w = this._getWidth(shape);//方块的宽度
+				//this.h = _getHeight(shape);//方块的高度
+
+				this.clearTetris = function (){
+					for (var row = 0; row < this.h; row++) {
+						for (var cell = 0; cell < this.w; cell++) {
+							if(shape[row][cell] == 1){
+								carrier[this.y + row][this.x + cell] = false;
+								$(gridElemts[this.y + row][this.x + cell]).removeClass("cover");
+							}
+						};
+					};
+				}
+
+				this.putNewTetris = function (){
+					for (var row = 0; row < this.h; row++) {
+						for (var cell = 0; cell < this.w; cell++) {
+							if(shape[row][cell] == 1){
+								carrier[this.y + row][this.x + cell] = "cover";
+							}
+						};
+					};
+				}
+				/**
+				 * [moveDwon function]
+				 * @return {[type]} [是否能够下落,不能再下落的话就创建新的Tetris]
+				 */
+				this.moveDwon = function (){
+					this.clearTetris();
+					var _y = this.y + 1;
+					if(this.canMove(this.x, _y)){
+						this.y = _y;
+						this.putNewTetris();
+						_drawGrids();
+					}else{
+						//如果不能移动就原位显示
+						this.putNewTetris();
+						_drawGrids();
+						//之后判断是否满格
+						_checkFullLine();
+						return ;
+					}
+				}
+
+				/**
+				 * [canMove 判断是否能够下落或变形]
+				 * @param  {[string]} x [移动后的横坐标]
+				 * @param  {[string]} y [移动后的纵坐标]
+				 * @return {[bool]}   [返回是否能够移动TRUE或FALSE]
+				 */
+				this.canMove = function(x, y){
+					var flag = true;
+					if(y >= 19){
+						return false;
+					}
+					if(x >= width || x < 0 || y >= height || y < 0 || carrier[x][y] == "cover"){
+						flag =  false;
+					}
+					return flag;
+				}
+
+			}
+			Tetris.prototype = {
+				/**
+				 * [_getWidth function]
+				 * @param  {[array]} arr [方块形状的二位数组]
+				 * @return {[string]}     [数组中的最大值]
+				 */
+				_getWidth : function(arr){
+					var tempArr = new Array;
+					for (var j = 0; j < arr.length; j++) {
+						for (var i = 0; i < arr[j].length; i++) {
+							if(arr[j][i] == 1){
+								tempArr[i] = i;
+							}
+						};
+					};
+					return tempArr.length;
+				},
+				name : 123,
+				sayname : function(){
+					console.log("kevin");
+				},
+				
+			};
+			var tetris = new Tetris(4,0, f1.arr);
+			console.log(tetris);
+
+			var timerOut;
+			var timerID;
+			var speed = 0;
+
+			function moveDown(){
+				if(speed == 20){
+					clearTimeout(timerOut);
+					return;
+				}
+				speed++;
+				console.log(speed);
+			}
+
+			function _moveDown(){
+				moveDown();
+				timerOut = setTimeout(function (){_moveDown(); }, 100);
+			}
+			timerID = setTimeout(function (){ _moveDown() }, 100);
+
+			var arr = [
+					[1,1,0,0],
+					[1,0,0,0],
+					[1,0,0,0],
+					[0,0,0,0],
+			];//田
+
+			var rotate = function (arr){
+				//新疆一个数组存放变形后的形状
+				var temp = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+				for (var j = 0; j <= 2; j++) {
+					for(var i = 0; i <= 1; i++){
+						temp[i][2 - j] = arr[j][i];
+					}
+				};
+				console.log(temp);
+			}
+			rotate(arr);
+	}
+	
+
+	
+</script>
+</head>
+<body>
+	
+</body>
+</html>

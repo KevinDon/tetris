@@ -42,10 +42,10 @@
 			//方块的各种形状，使用二位数组将其实现
 			var shape = [
 				[
-					[1,0,0,0],
-					[1,0,0,0],
-					[1,0,0,0],
-					[1,0,0,0],
+					[1,1,1,],
+					[0,0,0,0],
+					[0,0,0,0],
+					[0,0,0,0],
 				],//丨
 				[
 					[1,0,0,0],
@@ -168,7 +168,7 @@
 					}else{
 						//如果符合要求，就将新形状的对象赋值给tetris，然后显示
 						tetris = newtetris;
-						tetris.putNewTetris();
+						tetris.putNeswTetris();
 						_drawGrids();
 					}
 				}
@@ -278,7 +278,7 @@
 							continue;
 						};
 						//当前行的格子都符合要求,那么销毁当前行，并把上面的格子进行遍历往下移动
-						for(curr_row = row; curr_row < 0; curr_row--){
+						for(curr_row = row; curr_row > 0; curr_row--){
 							for(cell = 0; cell < 10; cell++){
 								$(gridElemts[curr_row][cell]).removeClass("cover");
 								carrier[curr_row][cell] = carrier[curr_row - 1][cell];
