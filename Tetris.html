@@ -15,42 +15,397 @@
 	</style>
 	<script type="text/javascript" src= "jquery-2.1.0.min.js"></script>
 	<script type="text/javascript">
-		/*
-		[0,0,0,0,0,0,0,0,0,0]
-		[0,0,0,0,0,0,0,0,0,0]
-		[0,0,0,0,0,0,0,0,0,0]
-		[0,0,0,0,0,0,0,0,0,0]
-		[0,0,0,0,0,0,0,0,0,0]
-		[0,0,0,0,0,0,0,0,0,0]
-		[0,0,0,0,0,0,0,0,0,0]
-		[0,0,0,0,0,0,0,0,0,0]
-		[0,0,0,0,0,0,0,0,0,0]
-		[0,0,0,0,0,0,0,0,0,0]
-		
-		将界面显示模拟成二位数组，如上图
-		*/
-		var width = 10;//游戏区域宽度
-		var height = 20;//游戏区域高度
-		var gridElem = multArray(width, height);//显示在界面的数组
-		var carrier = multArray(width, height);//移动时的虚拟数组
+		$(function(){
+			/*
+			[0,0,0,0,0,0,0,0,0,0]
+			[0,0,0,0,0,0,0,0,0,0]
+			[0,0,0,0,0,0,0,0,0,0]
+			[0,0,0,0,0,0,0,0,0,0]
+			[0,0,0,0,0,0,0,0,0,0]
+			[0,0,0,0,0,0,0,0,0,0]
+			[0,0,0,0,0,0,0,0,0,0]
+			[0,0,0,0,0,0,0,0,0,0]
+			[0,0,0,0,0,0,0,0,0,0]
+			[0,0,0,0,0,0,0,0,0,0]
 
-		init();
-		
-		function init(){
-			
-		}
+			将二位数组模拟成界面显示，如上图
+			在循环中：j代表高度即行数，i代表宽度即每行中的每一格，并将其看作是坐标图
+			*/
+			var width = 10;//游戏区域宽度
+			var height = 20;//游戏区域高度
+			var gridElemts = multArray(width, height);//显示在界面的数组
+			var carrier = multArray(width, height);//移动时的虚拟数组
+			var tetris;//方块对象
+			var timerOut;
+			var timerID;
+			var gameOver;
+			//方块的各种形状，使用二位数组将其实现
+			var shape = [
+				[
+					[1,0,0,0],
+					[1,0,0,0],
+					[1,0,0,0],
+					[1,0,0,0],
+				],//丨
+				[
+					[1,0,0,0],
+					[1,0,0,0],
+					[1,1,0,0],
+					[0,0,0,0],
+				],//L
+				[
+					[0,1,0,0],
+					[0,1,0,0],
+					[1,1,0,0],
+					[0,0,0,0],
+				],//L的翻转
+				[
+					[1,1,0,0],
+					[1,1,0,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//田
+				[
+					[0,1,0,0],
+					[1,1,1,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//凸
+				[
+					[1,1,0,0],
+					[0,1,1,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//Z
+				[
+					[0,1,1,0],
+					[1,1,0,0],
+					[0,0,0,0],
+					[0,0,0,0],
+				],//S
+			];
 
-		function Area(){
-			
-		}
+			/**
+			 * [Tetris object]
+			 * @param {[int]} x     [初始的横坐标]
+			 * @param {[int]} y     [初始的纵坐标]
+			 * @param {[array]} shape [生成的形状方块]
+			 */
+			function Tetris (x, y, shape){
+				console.log(shape);
+				this.x = x;
+				this.y = y;
+				this.w = this._getWidth(shape);//方块的宽度
+				this.h = this._getHeight(shape);//方块的高度
 
-		function multArray(w, h){
-			var arr = new Array(h);
-			for (var i = 0; i < h; i++) {
-				arr[i] = new Array(w);
+				this.clearOldTetris = function (){
+					for (var row = 0; row <= this.h; row++) {
+						for (var cell = 0; cell <= this.w; cell++) {
+							if(shape[row][cell] == 1){
+								carrier[this.y + row][this.x + cell] = "";
+								$(gridElemts[this.y + row][this.x + cell]).removeClass("cover");
+							}
+						};
+					};
+				}
+
+				this.putNewTetris = function (){
+					for (var row = 0; row <= this.h; row++) {
+						for (var cell = 0; cell <= this.w; cell++) {
+							if(shape[row][cell] == 1){
+								carrier[this.y + row][this.x + cell] = "cover";
+							}
+						};
+					};
+				}
+
+				/**
+				 * [moveLeft 向左移动]
+				 * @return {[type]} [新位置的方块]
+				 */
+				this.moveLeft = function(){
+					this.clearOldTetris();
+					var _x = this.x - 1;
+					if(this.canMove(_x, y)){
+						this.x = _x;
+						this.putNewTetris();
+						_drawGrids();
+					}else{
+						//如果不能移动就原位显示
+						this.putNewTetris();
+						_drawGrids();
+					}
+				}
+
+				this.moveRight = function(){
+					this.clearOldTetris();
+					var _x = this.x + 1;
+					if(this.canMove(_x, y)){
+						this.x = _x;
+						this.putNewTetris();
+						_drawGrids();
+					}else{
+						//如果不能移动就原位显示
+						this.putNewTetris();
+						_drawGrids();
+					}
+				}
+
+				this.rotate = function(){
+					//新疆一个数组存放变形后的形状
+					var temp = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+					for (var j = 0; j <= this.h; j++) {
+						for(var i = 0; i <= this.w; i++){
+							temp[i][this.h - j] = shape[j][i];
+						}
+					};
+					//根据新的形状再创建新的newtetris对象
+					var newtetris = new Tetris(this.x, this.y, temp);
+					this.clearOldTetris();
+					if(!newtetris.canMove(this.x, this.y)){
+						//如果新形状不符合要求，就原位显示
+						tetris.putNewTetris();
+					}else{
+						//如果符合要求，就将新形状的对象赋值给tetris，然后显示
+						tetris = newtetris;
+						tetris.putNewTetris();
+						_drawGrids();
+					}
+				}
+
+				/**
+				 * [moveDwon function]
+				 * @return {[type]} [是否能够下落,不能再下落的话就创建新的Tetris]
+				 */
+				this.moveDwon = function (){
+					this.clearOldTetris();
+					var _y = this.y + 1;
+					
+					if(this.canMove(this.x, _y)){
+						this.y = _y;
+						this.putNewTetris();
+						_drawGrids();
+					}else{
+						//如果不能移动就原位显示
+						this.putNewTetris();
+						_drawGrids();
+						//之后判断是否满格
+						this._checkFullLine();
+						return ;
+					}
+				}
+
+				/**
+				 * [canMove 判断是否能够下落或变形]
+				 * @param  {[string]} x [移动后的横坐标]
+				 * @param  {[string]} y [移动后的纵坐标]
+				 * @return {[bool]}   [返回是否能够移动TRUE或FALSE]
+				 */
+				this.canMove = function(x, y){
+					console.log(y);
+					var flag = true;
+					for (var j = 0; j <= this.h; j++) {
+						for (var i = 0; i <= this.w; i++) {
+							//判断下次移动是否会出界
+							if((y + j ) >= height || (x + i) >= width){
+								return false;
+							}
+							if(x >= width || x < 0 || y >= height || y < 0 || (carrier[y + j][x + i] != "" && shape[j][i] == 1)){
+								flag =  false;
+							}
+						};
+					};
+					return flag;
+				}
+
+			}
+
+			Tetris.prototype = {
+
+				/**
+				 * [_getWidth function]
+				 * @param  {[array]} arr [方块形状的二位数组]
+				 * @return {[string]}     [数组中的最大值]
+				 */
+				_getWidth : function(arr){
+					var tempArr = new Array;
+					for (var j = 0; j < arr.length; j++) {
+						for (var i = 0; i < arr[j].length; i++) {
+							if(arr[j][i] == 1){
+								tempArr[i] = i;
+							}
+						};
+					};
+					return tempArr.length - 1;
+				},
+
+				/**
+				 * [_getWidth function]
+				 * @param  {[array]} arr [方块形状的二位数组]
+				 * @return {[string]}     [数组中的最大值]
+				 */
+				_getHeight : function(arr){
+					var tempArr = new Array;
+					for (var j = 0; j < arr.length; j++) {
+						for (var i = 0; i < arr[j].length; i++) {
+							if(arr[j][i] == 1){
+								tempArr[j] = j;
+							}
+						};
+					};
+					return tempArr.length - 1;
+				},
+
+				_checkFullLine : function(){
+					var row,full,cell;
+					var curr_row;//满格的行
+					var finalAbove = tetris.y;//下落停止后方块的上方纵坐标
+					var finalBelow = tetris.y + tetris.h;//下落停止后方块的下方纵坐标
+
+					//每次检查的行数最多为4行
+					for (row = finalBelow; row >= finalAbove; ) {
+						full = 1;//默认当前行是满格
+						//遍历每一个cell格子查看是否满足
+						for (cell = 0; cell < 10; cell++) {
+							if(carrier[row][cell] != "cover"){
+								full = 0;
+								break;//只要其中一个不符合要求，跳出当前循环，并设置full为0
+							}
+						};
+						//然后根据full的值判断是否开始上一行的遍历
+						if(full == 0){
+							row--;//遍历上一行是否符合要求
+							continue;
+						};
+						//当前行的格子都符合要求,那么销毁当前行，并把上面的格子进行遍历往下移动
+						for(curr_row = row; curr_row < 0; curr_row--){
+							for(cell = 0; cell < 10; cell++){
+								$(gridElemts[curr_row][cell]).removeClass("cover");
+								carrier[curr_row][cell] = carrier[curr_row - 1][cell];
+							}
+						}
+						this.putNewTetris();
+						_drawGrids();
+						finalAbove++;//所有方块整体下落了一个
+					};
+					this._checkGameOver();
+				},
+
+				/**
+				 * [_checkGameOver 检测游戏是否结束]
+				 * @return {[type]} [description]
+				 */
+				_checkGameOver : function(){
+					gameOver = false;
+					//判断最上面一行的每个格子，如果自由有一个是cover的话，就gameover
+					for (var i = 0; i < width; i++) {
+						if(carrier[0][i] == "cover"){
+							gameOver = true;
+							break;
+						}
+					};
+					if(!gameOver){
+						//如果没有gameover就，创建新的方块
+						tetris = new Tetris(4, 0, shape[Math.floor(Math.random() * 6)]);
+						tetris.putNewTetris();
+						_drawGrids();			
+					}else{
+						gameOver = true;
+						window.clearTimeout(timerOut);
+						console.log("你已经输了")
+					}
+				},
 			};
-			return arr;
-		}
+
+
+			/**
+			 * [_drawGrids function]
+			 * @return {[type]} [根据虚拟数组中的值在页面中显示对应的样式]
+			 */
+			function _drawGrids(){
+				for (var row = 0; row < height; row ++) {
+					for (var cell = 0; cell < width; cell++) {
+						if(carrier[row][cell] == "cover"){
+							$(gridElemts[row][cell]).addClass('cover');
+						}
+					};
+				};
+			}
+
+			
+			/**
+			 * [_canMove function]
+			 *  [设置下落动画效果]
+			 */
+			function _moveDown (){
+				if(gameOver){
+					return;
+				}
+				tetris.moveDwon()
+				timerOut = setTimeout(function (){_moveDown(); }, 1000);
+				
+			}
+
+			/**
+			 * [Area object]
+			 */
+			function Area(){
+				//生成游戏表格
+				this.createTable = function (){
+					var gameArea = document.getElementById("gameArea");
+					var table = document.createElement("table");
+					for (var j = 0; j< height; j++) {
+						var row = document.createElement("tr");
+						for (var i = 0; i < width; i++) {
+							var cell = document.createElement("td");
+							gridElemts[j][i] = row.appendChild(cell);
+						};
+						table.appendChild(row);
+					};
+					gameArea.appendChild(table);
+				}
+			}
+
+			//生成二位数组
+			function multArray(w, h){
+				var arr = new Array(h);
+				for (var j = 0; j < h; j++) {
+					arr[j] = new Array(w);
+					for (var i = 0; i < arr[j].length; i++) {
+						arr[j][i] = "";
+					};
+				};
+				return arr;
+			}
+
+			function listenEvent(e){
+				var e = e || event;
+				switch(e.keyCode){
+					case 37 : tetris.moveLeft();break;
+					case 38 : tetris.rotate();break;
+					case 39 : tetris.moveRight();break;
+					case 40 : tetris.moveAccelerate();break;
+				}
+			}
+
+			$(document).keydown(function(){
+				listenEvent(event);
+			})
+
+			//初始化整个游戏
+			function init(){
+				var area = new Area;
+				area.createTable();
+				tetris = new Tetris(4, 0, shape[Math.floor(Math.random() * 6)]);
+				//console.log(tetris.w);
+				tetris.putNewTetris();
+				_drawGrids();
+				timerID = setTimeout(function (){ _moveDown() }, 1000);
+			 }
+
+			init();
+		})
+
 	</script>
 </head>
 <body>
