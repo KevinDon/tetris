@@ -92,7 +92,7 @@
 			 * @param {[array]} shape [生成的形状方块]
 			 */
 			function Tetris (x, y, shape){
-				console.log(shape);
+				//console.log(shape);
 				this.x = x;
 				this.y = y;
 				this.w = this._getWidth(shape);//方块的宽度
@@ -169,7 +169,7 @@
 					}else{
 						//如果符合要求，就将新形状的对象赋值给tetris，然后显示
 						tetris = newtetris;
-						tetris.putNeswTetris();
+						tetris.putNewTetris();
 						_drawGrids();
 					}
 				}
@@ -197,7 +197,21 @@
 				}
 				
 				this.moveAccelerate = function (){
+					this.clearOldTetris();
+					var _y = this.y + 1;
 					
+					if(this.canMove(this.x, _y)){
+						this.y = _y;
+						this.putNewTetris();
+						_drawGrids();
+					}else{
+						//如果不能移动就原位显示
+						this.putNewTetris();
+						_drawGrids();
+						//之后判断是否满格
+						this._checkFullLine();
+						return ;
+					}
 				}
 
 				/**
@@ -345,7 +359,7 @@
 					return;
 				}
 				tetris.moveDwon()
-				timerOut = setTimeout(function (){_moveDown(); }, 100);
+				timerOut = setTimeout(function (){_moveDown(); }, 1000);
 				
 			}
 
@@ -403,7 +417,7 @@
 				//console.log(tetris.w);
 				tetris.putNewTetris();
 				_drawGrids();
-				timerID = setTimeout(function (){ _moveDown() }, 100);
+				timerID = setTimeout(function (){ _moveDown() }, 1000);
 			 }
 
 			init();
