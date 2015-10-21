@@ -126,7 +126,8 @@
 				this.moveLeft = function(){
 					this.clearOldTetris();
 					var _x = this.x - 1;
-					if(this.canMove(_x, y)){
+					console.log(carrier);
+					if(this.canMove(_x, this.y)){
 						this.x = _x;
 						this.putNewTetris();
 						_drawGrids();
@@ -140,7 +141,7 @@
 				this.moveRight = function(){
 					this.clearOldTetris();
 					var _x = this.x + 1;
-					if(this.canMove(_x, y)){
+					if(this.canMove(_x, this.y)){
 						this.x = _x;
 						this.putNewTetris();
 						_drawGrids();
@@ -160,7 +161,7 @@
 						}
 					};
 					//根据新的形状再创建新的newtetris对象
-					var newtetris = new Tetris(this.x, this.y, temp);
+					var newtetris = new Tetris(this.x, this.y, temp);	
 					this.clearOldTetris();
 					if(!newtetris.canMove(this.x, this.y)){
 						//如果新形状不符合要求，就原位显示
@@ -194,6 +195,10 @@
 						return ;
 					}
 				}
+				
+				this.moveAccelerate = function (){
+					
+				}
 
 				/**
 				 * [canMove 判断是否能够下落或变形]
@@ -202,20 +207,18 @@
 				 * @return {[bool]}   [返回是否能够移动TRUE或FALSE]
 				 */
 				this.canMove = function(x, y){
-					console.log(y);
-					var flag = true;
 					for (var j = 0; j <= this.h; j++) {
 						for (var i = 0; i <= this.w; i++) {
 							//判断下次移动是否会出界
 							if((y + j ) >= height || (x + i) >= width){
 								return false;
 							}
-							if(x >= width || x < 0 || y >= height || y < 0 || (carrier[y + j][x + i] != "" && shape[j][i] == 1)){
-								flag =  false;
+							if(x >= width || x < 0 || y >= height || y < 0 || (carrier[y + j][x + i] == "cover" && shape[j][i] == 1)){
+								return false;
 							}
 						};
 					};
-					return flag;
+					return true;
 				}
 
 			}
@@ -342,7 +345,7 @@
 					return;
 				}
 				tetris.moveDwon()
-				timerOut = setTimeout(function (){_moveDown(); }, 500);
+				timerOut = setTimeout(function (){_moveDown(); }, 100);
 				
 			}
 
@@ -400,7 +403,7 @@
 				//console.log(tetris.w);
 				tetris.putNewTetris();
 				_drawGrids();
-				timerID = setTimeout(function (){ _moveDown() }, 500);
+				timerID = setTimeout(function (){ _moveDown() }, 100);
 			 }
 
 			init();
