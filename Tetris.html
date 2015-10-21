@@ -5,15 +5,22 @@
 	<title>Tetris</title>
 	<style type="text/css">
 		table {margin:0; overflow:hidden; border-collapse:collapse; }
-		td {width:20px; height:20px; border:1px solid #eee; background:#f4f4f4}
-		#bigArea{ overflow: hidden; width: 350px; margin: 0 auto; position: relative;}
+		td {width:20px; height:20px; border:1px solid #8C8C8C; background:#f4f4f4}
+		.wrapper{overflow: hidden; width: 600px; margin: 0 auto; border: 1px solid #D6D6D6; padding: 0 0 5px 0; }
+		.title{ font-family: "Comic Sans MS"; background: #E6E6E6; line-height: 35px; font-size: 24px; text-align: center;}
+		#bigArea{ overflow: hidden; width: 420px; margin: 35px auto; position: relative; }
 		#gameArea{ float: left; }
-		#buttons{ float: left; width: 100px; position: absolute; bottom: 0; right: 0; }
+		#lcd{ overflow: hidden; float: right; width: 140px;}
+		#buttons{  width: 140px; margin-bottom: 2px;}
 		.button{ float: left;  margin-right: 5px; margin-bottom: 5px;}
 		.cover{ background: #000; }
 		.block{ background: #000;  }
+		.scoreArea{ font-family: "Comic Sans MS"; border: 1px solid #000; text-align: center; margin-top: 10px; }
 	</style>
+	<link rel="stylesheet" type="text/css" href="bootstarp/css/buttons.css">
+	<link rel="stylesheet" type="text/css" href="bootstarp/css/flat-ui.css">
 	<script type="text/javascript" src= "jquery-2.1.0.min.js"></script>
+	<script type="text/javascript" src= "bootstarp/js/radiocheck.js"></script>
 	<script type="text/javascript">
 		$(function(){
 			/*
@@ -425,10 +432,11 @@
 				listenEvent(event);
 			})
 
+			var area = new Area;
+			area.createTable();
+
 			//初始化整个游戏
 			function init(){
-				var area = new Area;
-				area.createTable();
 				tetris = new Tetris(4, 0, shape[Math.floor(Math.random() * 6)]);
 				//console.log(tetris.w);
 				tetris.putNewTetris();
@@ -442,13 +450,27 @@
 	</script>
 </head>
 <body>
-	<div id="bigArea">
-		<div id="gameArea"></div>
-		<div id="buttons">
-			<input id ="start" type="button" value="开始" class="button">
-			<input id="pause" type="button" value="暂停" class="button">
-			<input id="restart" type="button" value="重来" class="button">
-		</div>
+	<div class="wrapper">
+		<div class="title">Welcome, Tetris</div>
+		<div id="bigArea">
+			<div id="gameArea"></div>
+			<div id="lcd">
+				<div id="buttons">
+					<span class="button-wrap">
+						<input id ="start" type="button" value="Start" class="button button-pill" style="width:120px;  text-align: center;padding: 0;">
+					</span>
+					<input id="pause" type="button" value="Pause" class="button" style="display:none">
+					<span class="button-wrap">
+						<input id="restart" type="button" value="Return" class="button button-pill button-raised button-primary" style="width:120px; text-align: center; padding: 0; ">
+					</span>
+
+				</div>
+				<div class="scoreArea">
+					<span>Score: </span>
+					<span class="score">0</span>
+				</div>		
+			</div>
+		</div>		
 	</div>
 </body>
 </html>
