@@ -161,9 +161,25 @@
 						}
 					};
 					//根据新的形状再创建新的newtetris对象
-					var newtetris = new Tetris(this.x, this.y, temp);	
+					var newtetris = new Tetris(this.x, this.y, temp);
+
 					this.clearOldTetris();
-					if(!newtetris.canMove(this.x, this.y)){
+
+					//根据新形状的this.x + i = ? 再去判断this.x - ?;
+					console.log(newtetris.x,newtetris.h, newtetris.w);
+					var newLen = newtetris.x + newtetris.w;//x = 9 w = 3
+					//如果超过9，那么意味着方块超出边界
+					if(newLen > 9){
+						//超出的长度
+						var beyond = newLen - 9;
+						//根据超出的长度，重新设置将X坐标
+						newtetris.x = newtetris.x - beyond;
+					}
+
+					console.log(this.x);
+					console.log(carrier);
+
+					if(!newtetris.canMove(newtetris.x, this.y)){
 						//如果新形状不符合要求，就原位显示
 						tetris.putNewTetris();
 					}else{
@@ -203,7 +219,6 @@
 				this.moveAccelerate = function (){
 					this.clearOldTetris();
 					var _y = this.y + 1;
-					
 					if(this.canMove(this.x, _y)){
 						this.y = _y;
 						this.putNewTetris();
@@ -228,10 +243,7 @@
 					for (var j = 0; j <= this.h; j++) {
 						for (var i = 0; i <= this.w; i++) {
 							//判断下次移动是否会出界
-							if((y + j ) >= height || (x + i) >= width){
-								return false;
-							}
-							if(x >= width || x < 0 || y >= height || y < 0 || (carrier[y + j][x + i] == "cover" && shape[j][i] == 1)){
+							if((x + i) >= width || x < 0 || (y + j) >= height || y < 0 || (carrier[y + j][x + i] == "cover" && shape[j][i] == 1)){
 								return false;
 							}
 						};
@@ -307,7 +319,7 @@
 						}
 						this.putNewTetris();
 						_drawGrids();
-						finalAbove++;//所有方块整体下落了一个
+						finalAbove++;//所有方块整体下落了一层
 					};
 					this._checkGameOver();
 				},
@@ -318,7 +330,7 @@
 				 */
 				_checkGameOver : function(){
 					gameOver = false;
-					//判断最上面一行的每个格子，如果自由有一个是cover的话，就gameover
+					//判断最上面一行的每个格子，如果只要有一个是cover的话，就gameover
 					for (var i = 0; i < width; i++) {
 						if(carrier[0][i] == "cover"){
 							gameOver = true;
