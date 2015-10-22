@@ -133,7 +133,7 @@
 				this.moveLeft = function(){
 					this.clearOldTetris();
 					var _x = this.x - 1;
-					console.log(carrier);
+					//console.log(carrier);
 					if(this.canMove(_x, this.y)){
 						this.x = _x;
 						this.putNewTetris();
@@ -173,7 +173,7 @@
 					this.clearOldTetris();
 
 					//根据新形状的this.x + i = ? 再去判断this.x - ?;
-					console.log(newtetris.x,newtetris.h, newtetris.w);
+					//console.log(newtetris.x,newtetris.h, newtetris.w);
 					var newLen = newtetris.x + newtetris.w;//x = 9 w = 3
 					//如果超过9，那么意味着方块超出边界
 					if(newLen > 9){
@@ -183,8 +183,6 @@
 						newtetris.x = newtetris.x - beyond;
 					}
 
-					console.log(this.x);
-					console.log(carrier);
 
 					if(!newtetris.canMove(newtetris.x, this.y)){
 						//如果新形状不符合要求，就原位显示
@@ -322,9 +320,9 @@
 							for(cell = 0; cell < 10; cell++){
 								$(gridElemts[curr_row][cell]).removeClass("cover");
 								carrier[curr_row][cell] = carrier[curr_row - 1][cell];
+								//this.putNewTetris();
 							}
 						}
-						this.putNewTetris();
 						_drawGrids();
 						finalAbove++;//所有方块整体下落了一层
 					};
