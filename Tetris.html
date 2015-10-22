@@ -459,13 +459,20 @@
 				}
 			}
 
-			$(document).keydown(function(){
-				listenEvent(event);
-			})
-
+			function clearTable(){
+				for(var j = 0; j < height; j++){
+					for(var i = 0; i < width; i++){
+						carrier[j][i] = "";
+						$(gridElemts[j][i]).removeClass("cover");
+					}
+				}
+			}
 			var area = new Area;
 			area.createTable();
 
+			$(document).keydown(function(){
+				listenEvent(event);
+			})
 			//初始化整个游戏
 			function init(){
 				tetris = new Tetris(4, 0, shape[Math.floor(Math.random() * 6)]);
@@ -474,8 +481,28 @@
 				_drawGrids();
 				timerID = setTimeout(function (){ _moveDown() }, 1000);
 			 }
+			
+			$("#start").bind("click", function(){
+				//console.log($(this).val());
+				if($(this).val() == "Start"){
+					init();
+					$(this).val("Pause");
+				}else if($(this).val() == "Pause"){
+					$(this).val("Go on");
+					//console.log(timerOut);
+					clearTimeout(timerOut);
+				}else {
+					$(this).val("Pause");
+					timerOut = setTimeout(function (){_moveDown(); }, interval);
+				}
+			})
 
-			init();
+			$("#restart").bind("click",function(){
+				//console.log("restart");
+				clearTable();
+				init();
+			})
+			
 		})
 
 	</script>
