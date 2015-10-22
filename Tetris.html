@@ -349,7 +349,7 @@
 					};
 					if(!gameOver){
 						//如果没有gameover就，创建新的方块
-						console.log("销毁了" + this._gotLine +"行");
+						//console.log("销毁了" + this._gotLine +"行");
 						_showScore(this._gotLine);
 						tetris = new Tetris(4, 0, shape[Math.floor(Math.random() * 6)]);
 						tetris.putNewTetris();
@@ -412,7 +412,7 @@
 					return;
 				}
 				tetris.moveDwon();
-				console.log(interval);
+				//console.log(interval);
 				timerOut = setTimeout(function (){_moveDown(); }, interval);
 				
 			}
@@ -489,7 +489,7 @@
 					$(this).val("Pause");
 				}else if($(this).val() == "Pause"){
 					$(this).val("Go on");
-					//console.log(timerOut);
+					console.log(timerOut);
 					clearTimeout(timerOut);
 				}else {
 					$(this).val("Pause");
