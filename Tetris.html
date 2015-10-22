@@ -46,6 +46,8 @@
 			var timerOut;
 			var timerID;
 			var gameOver;
+			var interval = 1000;//方块下落速度
+			var level = 1;
 			//方块的各种形状，使用二位数组将其实现
 			var shape = [
 				[
@@ -99,6 +101,7 @@
 			 * @param {[array]} shape [生成的形状方块]
 			 */
 			function Tetris (x, y, shape){
+				this._gotLine = 0;//记录当前方块能够销毁几行
 				//console.log(shape);
 				this.x = x;
 				this.y = y;
@@ -324,7 +327,8 @@
 							}
 						}
 						_drawGrids();
-						finalAbove++;//所有方块整体下落了一层
+						this._gotLine++;
+						finalAbove++;//所有方块的顶点整体下落了一层
 					};
 					this._checkGameOver();
 				},
@@ -344,6 +348,8 @@
 					};
 					if(!gameOver){
 						//如果没有gameover就，创建新的方块
+						console.log("销毁了" + this._gotLine +"行");
+						_showScore(this._gotLine);
 						tetris = new Tetris(4, 0, shape[Math.floor(Math.random() * 6)]);
 						tetris.putNewTetris();
 						_drawGrids();			
@@ -369,7 +375,35 @@
 					};
 				};
 			}
-
+			/**
+			 * [_showScore 更新分数]
+			 * @param  {[type]} line [这个方块消除的行数]
+			 * @return {[type]}      [新的分数]
+			 * 15min 900s 
+			 */
+			function _showScore(line){
+				//line的最大值为4
+				var oldScore = parseInt($(".score").text());
+				var newSocre = oldScore + parseInt(line * 100);
+				// 10000分的极限值，Leve
+				//  1000 - 100 * 0    小于1000之前都是这个数
+				//  1000 - 100 * 1    大于1000少于2000之前都是这个数
+				//  1000 - 100 * 2    大于2000少于3000之前都是这个数
+				//  1000 - 100 * 3    大于3000少于4000之前都是这个数
+				//  1000 - 100 * 4    大于4000少于5000之前都是这个数
+				//  1000 - 100 * 5    大于5000少于6000之前都是这个数
+				//  1000 - 100 * 6    大于6000少于7000之前都是这个数
+				//  1000 - 100 * 7    大于7000少于8000之前都是这个数
+				//  1000 - 100 * 8    大于8000少于9000之前都是这个数
+				//  1000 - 100 * 9    大于9000少于10000之前都是这个数
+				//如果newScore > 10000,那么之后的等级都以9为准
+				// interval - 100 * (Math.floor(newSocre/interval)); 
+				level = Math.floor(newSocre/interval);
+				interval = interval - level * 100;
+				level = level + parseInt($(".level").text());
+				$(".level").text(level);
+				$(".score").text(newSocre);
+			}
 			
 			/**
 			 * [_canMove function]
@@ -380,7 +414,7 @@
 					return;
 				}
 				tetris.moveDwon()
-				timerOut = setTimeout(function (){_moveDown(); }, 1000);
+				timerOut = setTimeout(function (){_moveDown(); }, interval);
 				
 			}
 
@@ -463,10 +497,16 @@
 					</span>
 
 				</div>
-				<div class="scoreArea">
-					<span>Score: </span>
-					<span class="score">0</span>
-				</div>		
+				<div>
+					<div class="scoreArea">
+						<span>Level: </span>
+						<span class="level">0</span>
+					</div>
+					<div class="scoreArea">
+						<span>Score: </span>
+						<span class="score">0</span>
+					</div>		
+				</div>
 			</div>
 		</div>		
 	</div>
