@@ -43,6 +43,7 @@
 			var gridElemts = multArray(width, height);//显示在界面的数组
 			var carrier = multArray(width, height);//移动时的虚拟数组
 			var tetris;//方块对象
+			var showNewTetris;
 			var timerOut;
 			var timerID;
 			var gameOver;
@@ -187,7 +188,6 @@
 						newtetris.x = newtetris.x - beyond;
 					}
 
-
 					if(!newtetris.canMove(newtetris.x, this.y)){
 						//如果新形状不符合要求，就原位显示
 						tetris.putNewTetris();
@@ -233,7 +233,7 @@
 						this.putNewTetris();
 						_drawGrids();
 					}else{
-						//如果不能移动就原位显示
+						//如果不能移动就原位显示-
 						this.putNewTetris();
 						_drawGrids();
 						//之后判断是否满格
@@ -259,7 +259,6 @@
 					};
 					return true;
 				}
-
 			}
 
 			Tetris.prototype = {
@@ -319,7 +318,7 @@
 							row--;//遍历上一行是否符合要求
 							continue;
 						};
-						//当前行的格子都符合要求,那么销毁当前行，并把上面的格子进行遍历往下移动
+						//当前行的格子都符合要求，那么销毁当前行，并把上面的格子进行遍历往下移动
 						for(curr_row = row; curr_row > 0; curr_row--){
 							for(cell = 0; cell < 10; cell++){
 								$(gridElemts[curr_row][cell]).removeClass("cover");
@@ -349,11 +348,15 @@
 					};
 					if(!gameOver){
 						//如果没有gameover就，创建新的方块
-						//console.log("销毁了" + this._gotLine +"行");
+						//console.log("销毁了" + ._gotLine +"行");
 						_showScore(this._gotLine);
-						tetris = new Tetris(4, 0, shape[Math.floor(Math.random() * 6)]);
+						if(showNewTetris){
+							tetris = showNewTetris;
+						}else{
+							tetris = new Tetris(4, 0, shape[Math.floor(Math.random() * 6)]);
+						}
 						tetris.putNewTetris();
-						_drawGrids();			
+						_drawGrids();
 					}else{
 						gameOver = true;
 						window.clearTimeout(timerOut);
@@ -398,7 +401,8 @@
 				// interval - 100 * (Math.floor(newSocre/interval)); 
 				speed = Math.floor(newSocre / 1000); //1500 / 1000  获取更新的速度
 				interval = 1000 - speed * 100; //获取更新的间距
-				level = speed + parseInt($(".level").text());
+				level = speed + 1;
+				console.log(speed,level);
 				$(".level").text(level);
 				$(".score").text(newSocre);
 			}
@@ -414,7 +418,6 @@
 				tetris.moveDwon();
 				//console.log(interval);
 				timerOut = setTimeout(function (){_moveDown(); }, interval);
-				
 			}
 
 			/**
@@ -470,7 +473,7 @@
 			var area = new Area;
 			area.createTable();
 
-			$(document).keydown(function(){
+			$(document).keydown(function(event){
 				listenEvent(event);
 			})
 			//初始化整个游戏

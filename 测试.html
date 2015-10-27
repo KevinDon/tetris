@@ -61,6 +61,62 @@
 			};		
 		}
 
+		// var dog = {
+		// 	name : "大黄",
+		// 	color: "black"
+		// }
+
+		// var dog = new Object;
+		// dog.color = "white";
+
+		// console.log(dog.color);
+
+
+		function dog(){
+			this.name = "dog";//公开属性
+			var age = 5;//私有属性
+		}
+
+		var dog = new dog;
+
+		console.log(dog.age);
+
+		var arr = new Array();
+		arr.push("test");
+
+		Array.prototype.push = function (newElemt){
+			this[this.length] = newElemt;
+			return this.length;
+		}
+
+
+		function animal(){
+			this.say = function(){
+			console.log(this.name);
+		}
+		}
+		function dog(){
+			this.name = “dog”;
+			animal.call(this);
+		}
+
+		var dog = new dog;
+		dog.say();
+
+
+		function animal(){
+			this.say = function(){
+				console.log(this.name);
+			}
+		}
+		function dog(){
+			this.name = “dog”;
+		}
+
+		function cat(){
+			this.name = “Cat”;
+		}
+
 	</script>
 </head>
 <body>
